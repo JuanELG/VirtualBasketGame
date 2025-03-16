@@ -1,9 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-public interface IInputManager
+namespace BasketGame.Core
 {
-    event Action AimStarted;
-    event Action AimCanceled;
-    Vector2 AimVector { get; }
+    public interface IInputManager
+    {
+        event Action AimStarted;
+        event Action AimCanceled;
+        Vector2 AimVector { get; }
+    }
 }
