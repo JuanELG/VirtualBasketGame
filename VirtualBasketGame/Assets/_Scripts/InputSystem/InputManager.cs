@@ -8,6 +8,7 @@ namespace BasketGame.InputSystem
     public class InputManager : MonoBehaviour, IInputManager
     {
         public event Action AimStarted;
+        public event Action<Vector2> AimPerformed;
         public event Action AimCanceled;
 
         private GameControls gameControl = null;
@@ -23,6 +24,7 @@ namespace BasketGame.InputSystem
         {
             gameControl.Enable();
             gameControl.Gameplay.Aim.started += RaiseAimStarted;
+            gameControl.Gameplay.Aim.performed += RaiseAimPerformed;
             gameControl.Gameplay.Aim.canceled += RaiseAimCanceled;
         }
 
@@ -30,12 +32,18 @@ namespace BasketGame.InputSystem
         {
             gameControl.Disable();
             gameControl.Gameplay.Aim.started -= RaiseAimStarted;
+            gameControl.Gameplay.Aim.performed -= RaiseAimPerformed;
             gameControl.Gameplay.Aim.canceled -= RaiseAimCanceled;
         }
 
         private void RaiseAimStarted(InputAction.CallbackContext context)
         {
             AimStarted?.Invoke();
+        }
+
+        private void RaiseAimPerformed(InputAction.CallbackContext context)
+        {
+            AimPerformed?.Invoke(context.ReadValue<Vector2>());
         }
 
         private void RaiseAimCanceled(InputAction.CallbackContext context)
