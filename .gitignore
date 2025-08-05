@@ -59,3 +59,7 @@ Exploding Quest Unity/ios/test
 
 # Rider
 VirtualBasketGame/.idea/
+
+# Variables de entorno
+.env
+*.env
