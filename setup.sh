@@ -9,22 +9,35 @@ echo "==> Installing Git LFS..."
 git lfs install
 git lfs pull || echo "No LFS files or failed pull"
 
+echo "==> Adding Unity Hub repository and key..."
+wget -qO - https://hub.unity3d.com/linux/keys/public \
+  | gpg --dearmor \
+  | sudo tee /usr/share/keyrings/Unity_Technologies_ApS.gpg > /dev/null
+
+sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/Unity_Technologies_ApS.gpg] https://hub.unity3d.com/linux/repos/deb stable main" \
+  > /etc/apt/sources.list.d/unityhub.list'
+
 echo "==> Installing Unity Hub..."
-sudo sh -c 'echo "deb https://hub.unity3d.com/linux/repos/deb stable main" > /etc/apt/sources.list.d/unityhub.list'
-wget -qO - https://hub.unity3d.com/linux/keys/public | sudo apt-key add -
-apt-get update
+sudo apt-get update
 sudo apt-get install -y unityhub
 
 echo "==> Installing Unity Editor via Hub CLI..."
-unityhub -- --headless install \
-  --version "$UNITY_VERSION"
+unityhub -- --headless install --version "$UNITY_VERSION"
 
-echo "==> Installing Android modules (SDK, NDK, OpenJDK)..."
+echo "==> Installing Android modules via Hub CLI..."
 unityhub -- --headless install-modules \
   --version "$UNITY_VERSION" \
   -m android \
   -m android-sdk-ndk-tools \
   -m android-open-jdk
+
+echo "==> Exporting env variables..."
+if [ -f .env ]; then
+  export $(grep -v '^#' .env | xargs)
+else
+  echo ".env not found!"
+  exit 1
+fi
 
 echo "==> Exporting specific variables to environment..."
 export OPENAI_API_KEY
